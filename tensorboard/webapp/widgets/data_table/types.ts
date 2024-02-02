@@ -121,11 +121,18 @@ export enum Side {
 export interface ReorderColumnEvent {
   source: ColumnHeader;
   destination: ColumnHeader;
-  side?: Side | undefined;
+  side?: Side | undefined; // Only used when destination is not found.
 }
 
 export interface AddColumnEvent {
   column: ColumnHeader;
   nextTo?: ColumnHeader | undefined;
   side?: Side | undefined;
+}
+
+export enum ColumnGroup {
+  RUN = 'RUN',
+  EXPERIMENT_ALIAS = 'EXPERIMENT_ALIAS',
+  HPARAM = 'HPARAM',
+  OTHER = 'OTHER',
 }

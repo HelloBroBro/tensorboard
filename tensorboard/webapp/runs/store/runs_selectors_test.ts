@@ -21,8 +21,10 @@ import {
   buildSessionGroup,
   buildStateFromHparamsState,
   buildHparamsState,
+  buildHparamSpec,
 } from '../../hparams/testing';
 import {buildMockState} from '../../testing/utils';
+import {State} from '../../app_state';
 import {DataLoadState} from '../../types/data';
 import {ColumnHeaderType, SortingOrder} from '../../widgets/data_table/types';
 import {GroupByKey} from '../types';
@@ -1023,6 +1025,129 @@ describe('runs_selectors', () => {
           displayName: 'Color',
           enabled: false,
         },
+      ]);
+    });
+  });
+
+  describe('#getGroupedRunsTableHeaders', () => {
+    let state: State;
+
+    beforeEach(() => {
+      state = buildMockState({
+        runs: buildRunsState(
+          {},
+          {
+            runsTableHeaders: [
+              {
+                type: ColumnHeaderType.COLOR,
+                name: 'color',
+                displayName: 'Color',
+                enabled: true,
+              },
+              {
+                type: ColumnHeaderType.CUSTOM,
+                name: 'experimentAlias',
+                displayName: 'Experiment Alias',
+                enabled: true,
+              },
+              {
+                type: ColumnHeaderType.RUN,
+                name: 'run',
+                displayName: 'Run',
+                enabled: true,
+              },
+            ],
+          }
+        ),
+        ...buildStateFromHparamsState(
+          buildHparamsState({
+            dashboardSpecs: {
+              hparams: [
+                buildHparamSpec({name: 'conv_layers'}),
+                buildHparamSpec({name: 'conv_kernel_size'}),
+              ],
+            },
+            dashboardDisplayedHparamColumns: [
+              {
+                type: ColumnHeaderType.HPARAM,
+                name: 'conv_layers',
+                displayName: 'Conv Layers',
+                enabled: true,
+              },
+              {
+                type: ColumnHeaderType.HPARAM,
+                name: 'conv_kernel_size',
+                displayName: 'Conv Kernel Size',
+                enabled: true,
+              },
+            ],
+          })
+        ),
+      });
+    });
+
+    it('returns runs table headers grouped with other headers', () => {
+      expect(selectors.getGroupedRunsTableHeaders(state)).toEqual([
+        jasmine.objectContaining({
+          type: ColumnHeaderType.RUN,
+          name: 'run',
+          displayName: 'Run',
+          enabled: true,
+        }),
+        jasmine.objectContaining({
+          type: ColumnHeaderType.CUSTOM,
+          name: 'experimentAlias',
+          displayName: 'Experiment Alias',
+          enabled: true,
+        }),
+        jasmine.objectContaining({
+          type: ColumnHeaderType.HPARAM,
+          name: 'conv_layers',
+          displayName: 'Conv Layers',
+          enabled: true,
+        }),
+        jasmine.objectContaining({
+          type: ColumnHeaderType.HPARAM,
+          name: 'conv_kernel_size',
+          displayName: 'Conv Kernel Size',
+          enabled: true,
+        }),
+        jasmine.objectContaining({
+          type: ColumnHeaderType.COLOR,
+          name: 'color',
+          displayName: 'Color',
+          enabled: true,
+        }),
+      ]);
+    });
+
+    it('sets the hparam column context options for the runs table', () => {
+      expect(selectors.getGroupedRunsTableHeaders(state)).toEqual([
+        jasmine.objectContaining({
+          type: ColumnHeaderType.RUN,
+        }),
+        jasmine.objectContaining({
+          type: ColumnHeaderType.CUSTOM,
+        }),
+        jasmine.objectContaining({
+          type: ColumnHeaderType.HPARAM,
+          name: 'conv_layers',
+          displayName: 'Conv Layers',
+          enabled: true,
+          removable: true,
+          hidable: false,
+        }),
+        jasmine.objectContaining({
+          type: ColumnHeaderType.HPARAM,
+          name: 'conv_kernel_size',
+          displayName: 'Conv Kernel Size',
+          enabled: true,
+          removable: true,
+          hidable: false,
+        }),
+        jasmine.objectContaining({
+          type: ColumnHeaderType.COLOR,
+        }),
       ]);
     });
   });

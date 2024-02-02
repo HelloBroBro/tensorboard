@@ -88,7 +88,6 @@ tf_ts_library(
 tf_sass_binary(
     name = "app_styles",
     src = "app_container.scss",
-    strict_deps = False,
     deps = ["//tensorboard/webapp/theme"],
 )
 
@@ -301,6 +300,7 @@ tf_ng_web_test_suite(
         "//tensorboard/webapp/widgets/content_wrapping_input:content_wrapping_input_tests",
         "//tensorboard/webapp/widgets/custom_modal:custom_modal_test",
         "//tensorboard/webapp/widgets/data_table:data_table_test",
+        "//tensorboard/webapp/widgets/data_table:utils_test",
         "//tensorboard/webapp/widgets/dropdown:dropdown_tests",
         "//tensorboard/webapp/widgets/experiment_alias:experiment_alias_test",
         "//tensorboard/webapp/widgets/filter_input:filter_input_test",
@@ -384,6 +384,5 @@ tf_external_sass_libray(
 tf_sass_binary(
     name = "styles",
     src = "styles.scss",
-    strict_deps = False,
     deps = ["//tensorboard/webapp/theme"],
 )

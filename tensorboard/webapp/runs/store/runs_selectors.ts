@@ -26,9 +26,13 @@ import {
 } from './runs_types';
 import {createGroupBy} from './utils';
 import {getExperimentIdsFromRoute} from '../../app_routing/store/app_routing_selectors';
-import {getDashboardSessionGroups} from '../../hparams/_redux/hparams_selectors';
+import {
+  getDashboardDisplayedHparamColumns,
+  getDashboardSessionGroups,
+} from '../../hparams/_redux/hparams_selectors';
 import {HparamValue, RunToHparamsAndMetrics} from '../../hparams/types';
 import {ColumnHeader, SortingInfo} from '../../widgets/data_table/types';
+import {dataTableUtils} from '../../widgets/data_table/utils';
 
 const getRunsState = createFeatureSelector<RunsState>(RUNS_FEATURE_KEY);
 
@@ -301,7 +305,7 @@ export const getColorGroupRegexString = createSelector(
 );
 
 /**
- * Gets the columns to be displayed by the runs table.
+ * Gets the standard columns to be displayed by the runs table.
  */
 export const getRunsTableHeaders = createSelector(
   getUiState,
@@ -317,5 +321,25 @@ export const getRunsTableSortingInfo = createSelector(
   getUiState,
   (state: RunsUiState): SortingInfo => {
     return state.sortingInfo;
+  }
+);
+
+/**
+ * Gets the grouped columns to be displayed by the runs table.
+ */
+export const getGroupedRunsTableHeaders = createSelector(
+  getRunsTableHeaders,
+  getDashboardDisplayedHparamColumns,
+  (runsTableHeaders, hparamColumns) => {
+    // Override hparam options to match runs table requirements.
+    const columns = [...runsTableHeaders, ...hparamColumns].map((column) => {
+      const newColumn = {...column};
+      if (column.type === 'HPARAM') {
+        newColumn.removable = true;
+        newColumn.hidable = false;
+      }
+      return newColumn;
+    });
+    return dataTableUtils.groupColumns(columns);
   }
 );

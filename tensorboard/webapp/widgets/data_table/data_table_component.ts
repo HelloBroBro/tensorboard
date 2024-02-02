@@ -34,6 +34,9 @@ import {
   IntervalFilter,
   SortingInfo,
   SortingOrder,
+  ReorderColumnEvent,
+  Side,
+  AddColumnEvent,
 } from './types';
 import {HeaderCellComponent} from './header_cell_component';
 import {Subscription} from 'rxjs';
@@ -41,11 +44,6 @@ import {CustomModalComponent} from '../custom_modal/custom_modal_component';
 import {ColumnSelectorComponent} from './column_selector_component';
 import {ContentCellComponent} from './content_cell_component';
 import {RangeValues} from '../range_input/types';
-
-export enum Side {
-  RIGHT,
-  LEFT,
-}
 
 const preventDefault = function (e: MouseEvent) {
   e.preventDefault();
@@ -79,12 +77,9 @@ export class DataTableComponent implements OnDestroy, AfterContentInit {
   filterColumn: ColumnHeader | undefined = undefined;
 
   @Output() sortDataBy = new EventEmitter<SortingInfo>();
-  @Output() orderColumns = new EventEmitter<ColumnHeader[]>();
+  @Output() orderColumns = new EventEmitter<ReorderColumnEvent>();
   @Output() removeColumn = new EventEmitter<ColumnHeader>();
-  @Output() addColumn = new EventEmitter<{
-    header: ColumnHeader;
-    index?: number | undefined;
-  }>();
+  @Output() addColumn = new EventEmitter<AddColumnEvent>();
   @Output() addFilter = new EventEmitter<FilterAddedEvent>();
 
   @ViewChild('columnSelectorModal', {static: false})
@@ -181,13 +176,16 @@ export class DataTableComponent implements OnDestroy, AfterContentInit {
     if (!this.draggingHeaderName || !this.highlightedColumnName) {
       return;
     }
+    const source = this.getHeaderByName(this.draggingHeaderName);
+    const destination = this.getHeaderByName(this.highlightedColumnName);
+    if (source && destination && source !== destination) {
+      this.orderColumns.emit({
+        source,
+        destination,
+        side: this.highlightSide,
+      });
+    }
 
-    this.orderColumns.emit(
-      this.moveHeader(
-        this.getIndexOfHeaderWithName(this.draggingHeaderName!),
-        this.getIndexOfHeaderWithName(this.highlightedColumnName!)
-      )
-    );
     this.draggingHeaderName = undefined;
     this.highlightedColumnName = undefined;
     document.removeEventListener('dragover', preventDefault);
@@ -197,7 +195,10 @@ export class DataTableComponent implements OnDestroy, AfterContentInit {
   }
 
   dragEnter(header: ColumnHeader) {
-    if (!this.draggingHeaderName) {
+    if (
+      !this.draggingHeaderName ||
+      this.getIndexOfHeaderWithName(header.name) === -1
+    ) {
       return;
     }
     if (
@@ -237,6 +238,10 @@ export class DataTableComponent implements OnDestroy, AfterContentInit {
       'highlight-border-right': this.highlightSide === Side.RIGHT,
       'highlight-border-left': this.highlightSide === Side.LEFT,
     };
+  }
+
+  getHeaderByName(name: string): ColumnHeader | undefined {
+    return this.headers.find((header) => header.name === name);
   }
 
   getIndexOfHeaderWithName(name: string) {
@@ -340,7 +345,11 @@ export class DataTableComponent implements OnDestroy, AfterContentInit {
   }
 
   onColumnAdded(header: ColumnHeader) {
-    this.addColumn.emit({header, index: this.getInsertIndex()});
+    this.addColumn.emit({
+      column: header,
+      nextTo: this.contextMenuHeader,
+      side: this.insertColumnTo,
+    });
   }
 
   openFilterMenu(event: MouseEvent, header: ColumnHeader) {

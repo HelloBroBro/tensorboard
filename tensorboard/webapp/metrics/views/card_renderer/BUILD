@@ -5,7 +5,6 @@ package(default_visibility = ["//tensorboard:internal"])
 tf_sass_binary(
     name = "card_view_styles",
     src = "card_view_container.scss",
-    strict_deps = False,
     deps = ["//tensorboard/webapp/theme"],
 )
 
@@ -43,7 +42,6 @@ tf_ng_module(
 tf_sass_binary(
     name = "data_download_dialog_styles",
     src = "data_download_dialog_component.scss",
-    strict_deps = False,
     deps = ["//tensorboard/webapp/theme"],
 )
 
@@ -131,7 +129,6 @@ tf_ng_module(
 tf_sass_binary(
     name = "image_card_styles",
     src = "image_card_component.scss",
-    strict_deps = False,
     deps = [
         "//tensorboard/webapp:angular_material_sass_deps",
         "//tensorboard/webapp/metrics/views:metrics_common_styles",
@@ -179,7 +176,6 @@ tf_ng_module(
 tf_sass_binary(
     name = "run_name_styles",
     src = "run_name_component.scss",
-    strict_deps = False,
     deps = ["//tensorboard/webapp/theme"],
 )
 
@@ -209,7 +205,6 @@ tf_ng_module(
 tf_sass_binary(
     name = "vis_linked_time_selection_warning_styles",
     src = "vis_linked_time_selection_warning_component.scss",
-    strict_deps = False,
     deps = [
         "//tensorboard/webapp:angular_material_sass_deps",
         "//tensorboard/webapp/theme",
@@ -302,6 +297,7 @@ tf_ng_module(
         ":scalar_card_types",
         ":utils",
         "//tensorboard/webapp/metrics:types",
+        "//tensorboard/webapp/runs:types",
         "//tensorboard/webapp/widgets/card_fob:types",
         "//tensorboard/webapp/widgets/data_table",
         "//tensorboard/webapp/widgets/data_table:types",
@@ -346,6 +342,7 @@ tf_ng_module(
         "//tensorboard/webapp/metrics/views:types",
         "//tensorboard/webapp/metrics/views:utils",
         "//tensorboard/webapp/metrics/views/main_view:common_selectors",
+        "//tensorboard/webapp/runs:types",
         "//tensorboard/webapp/runs/store:types",
         "//tensorboard/webapp/types",
         "//tensorboard/webapp/types:ui",

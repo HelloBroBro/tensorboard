@@ -5,7 +5,6 @@ package(default_visibility = ["//tensorboard:internal"])
 tf_sass_binary(
     name = "data_table_styles",
     src = "data_table_component.scss",
-    strict_deps = False,
     deps = [
         "//tensorboard/webapp:angular_material_sass_deps",
         "//tensorboard/webapp/theme",
@@ -15,7 +14,6 @@ tf_sass_binary(
 tf_sass_binary(
     name = "header_cell_styles",
     src = "header_cell_component.scss",
-    strict_deps = False,
     deps = [
         "//tensorboard/webapp:angular_material_sass_deps",
         "//tensorboard/webapp/theme",
@@ -44,7 +42,6 @@ tf_sass_binary(
 tf_sass_binary(
     name = "column_selector_component_styles",
     src = "column_selector_component.scss",
-    strict_deps = False,
     deps = [
         "//tensorboard/webapp:angular_material_sass_deps",
         "//tensorboard/webapp/theme",
@@ -54,7 +51,6 @@ tf_sass_binary(
 tf_sass_binary(
     name = "filter_dialog_styles",
     src = "filter_dialog_component.scss",
-    strict_deps = False,
     deps = [
         "//tensorboard/webapp:angular_material_sass_deps",
         "//tensorboard/webapp/theme",
@@ -161,6 +157,29 @@ tf_ts_library(
     name = "types",
     srcs = [
         "types.ts",
+    ],
+)
+
+tf_ts_library(
+    name = "utils",
+    srcs = [
+        "utils.ts",
+    ],
+    deps = [
+        ":types",
+    ],
+)
+
+tf_ts_library(
+    name = "utils_test",
+    testonly = True,
+    srcs = [
+        "utils_test.ts",
+    ],
+    deps = [
+        ":types",
+        ":utils",
+        "@npm//@types/jasmine",
     ],
 )
 
